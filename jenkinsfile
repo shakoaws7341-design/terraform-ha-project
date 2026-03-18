@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  environment {
+    AWS_REGION = 'ap-south-1'
+  }
+
   stages {
 
     stage('Terraform Init') {
@@ -18,12 +22,15 @@ pipeline {
 
     stage('Terraform Apply') {
       steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-creds'
-        ]]) {
+        withCredentials([
+          [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
+          string(credentialsId: 'db-pass', variable: 'DB_PASS')
+        ]) {
           dir('terraform') {
-            sh 'terraform apply -auto-approve'
+            sh '''
+              terraform apply -auto-approve \
+              -var="db_password=$DB_PASS"
+            '''
           }
         }
       }
