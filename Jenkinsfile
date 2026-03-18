@@ -9,7 +9,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-repo.git'
+        git 'https://github.com/shakoaws7341-design/terraform-ha-project.git'
       }
     }
 
