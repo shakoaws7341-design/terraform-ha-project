@@ -4,7 +4,3 @@ variable "vpc_cidr" {
 variable "key_name"{
     default = "shako_aws_keys"
 } 
-variable "db_password" {
-    description = "rds_password"
-    sensitive = true  
-}
