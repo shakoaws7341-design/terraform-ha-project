@@ -22,7 +22,7 @@ resource "aws_db_instance" "db" {
 
   db_name  = "mydb"
   username = "admin"
-  password = var.db_password
+  password = "StrongPass@1234"
 
   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
 

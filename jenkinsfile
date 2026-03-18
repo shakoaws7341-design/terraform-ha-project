@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-1'
     }
-//comment
+
     stages {
 
         stage('Checkout Code') {
@@ -30,15 +30,12 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
-                    string(credentialsId: 'db-pass', variable: 'DB_PASS')
-                ]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
                     dir('terraform') {
-                        sh '''
-                          terraform plan \
-                          -var="db_password=$DB_PASS"
-                        '''
+                        sh 'terraform plan'
                     }
                 }
             }
@@ -46,15 +43,12 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds'],
-                    string(credentialsId: 'db-pass', variable: 'DB_PASS')
-                ]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds'
+                ]]) {
                     dir('terraform') {
-                        sh '''
-                          terraform apply -auto-approve \
-                          -var="db_password=$DB_PASS"
-                        '''
+                        sh 'terraform apply -auto-approve'
                     }
                 }
             }
