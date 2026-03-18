@@ -7,12 +7,6 @@ pipeline {
 
   stages {
 
-    stage('Checkout') {
-      steps {
-        git 'https://github.com/shakoaws7341-design/terraform-ha-project.git'
-      }
-    }
-
     stage('Terraform Init') {
       steps {
         dir('terraform') {
@@ -36,5 +30,6 @@ pipeline {
         }
       }
     }
+
   }
 }
