@@ -15,11 +15,13 @@ resource "aws_instance" "app" {
 
   vpc_security_group_ids = [aws_security_group.alb_sg.id]
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt update -y
-              apt install -y apache2
-              systemctl start apache2
-              echo "Hello from EC2" > /var/www/html/index.html
-              EOF
+user_data = <<-EOF
+#!/bin/bash
+apt update -y
+apt install -y nginx
+echo "Hello from ASG" > /var/www/html/index.html
+systemctl start nginx
+systemctl enable nginx
+EOF
 }
+
