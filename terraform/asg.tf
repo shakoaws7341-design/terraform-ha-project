@@ -4,7 +4,10 @@ resource "aws_launch_template" "app" {
   instance_type = "t3.micro"
 
   vpc_security_group_ids = [aws_security_group.alb_sg.id]
-
+network_interfaces {
+  associate_public_ip_address = true
+  security_groups             = [aws_security_group.ec2_sg.id]
+}
   user_data = base64encode(<<-EOF
               #!/bin/bash
               apt update -y
