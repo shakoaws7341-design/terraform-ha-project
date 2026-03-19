@@ -10,7 +10,7 @@ data "aws_ami" "latest_ubuntu" {
 
 resource "aws_instance" "app" {
   ami           = data.aws_ami.latest_ubuntu.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.public1.id
 
   vpc_security_group_ids = [aws_security_group.alb_sg.id]
