@@ -6,7 +6,7 @@ resource "aws_launch_template" "app" {
   vpc_security_group_ids = [aws_security_group.alb_sg.id]
 network_interfaces {
   associate_public_ip_address = true
-  security_groups             = [aws_security_group.ec2_sg.id]
+  security_groups             = [aws_security_group.alb_sg.id]
 }
   user_data = base64encode(<<-EOF
               #!/bin/bash
