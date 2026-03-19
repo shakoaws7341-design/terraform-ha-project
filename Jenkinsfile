@@ -1,31 +1,91 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['APPLY', 'DESTROY'],
+            description: 'Choose Terraform Action'
+        )
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    credentialsId: 'github-creds',
-                    url: 'https://github.com/shakoaws7341-design/terraform-ha-project.git'
+                credentialsId: 'github-creds',
+                url: 'https://github.com/shakoaws7341-design/terraform-ha-project.git'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                dir('terraform') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        // 🔍 PLAN ONLY FOR APPLY
+        stage('Terraform Plan') {
+            when {
+                expression { params.ACTION == 'APPLY' }
+            }
+            steps {
+                dir('terraform') {
+                    sh 'terraform plan -var="db_password=Password123!"'
+                }
+            }
+        }
+
+        // 🔐 APPROVAL BEFORE APPLY
+        stage('Approval for Apply') {
+            when {
+                expression { params.ACTION == 'APPLY' }
+            }
+            steps {
+                input message: 'Deploy infrastructure?', ok: 'Yes Apply'
+            }
+        }
+
+        // 🚀 APPLY
+        stage('Terraform Apply') {
+            when {
+                expression { params.ACTION == 'APPLY' }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
                     dir('terraform') {
-                        sh 'terraform init'
+                        sh 'terraform apply -auto-approve -var="db_password=Password123!"'
                     }
                 }
             }
         }
 
-        stage('Terraform Apply') {
+        // 🔥 APPROVAL BEFORE DESTROY 
+        stage('Approval for Destroy') {
+            when {
+                expression { params.ACTION == 'DESTROY' }
+            }
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                input message: '⚠️ Are you sure you want to DESTROY everything?', ok: 'Yes Destroy'
+            }
+        }
+
+        // 💣 DESTROY
+        stage('Terraform Destroy') {
+            when {
+                expression { params.ACTION == 'DESTROY' }
+            }
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+                ]) {
                     dir('terraform') {
-                        sh 'terraform apply -auto-approve'
+                        sh 'terraform destroy -auto-approve -var="db_password=Password123!"'
                     }
                 }
             }
