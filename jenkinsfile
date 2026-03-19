@@ -65,7 +65,7 @@ pipeline {
             }
         }
 
-        // 🔥 APPROVAL BEFORE DESTROY (VERY IMPORTANT)
+        // 🔥 APPROVAL BEFORE DESTROY 
         stage('Approval for Destroy') {
             when {
                 expression { params.ACTION == 'DESTROY' }
